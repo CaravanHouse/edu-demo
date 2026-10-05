@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+/* Zukko Academy (демо): энергичная тема — фуксия и солнечный жёлтый */
+@theme {
+  --color-bg: #fdf8fb;
+  --color-surface: #ffffff;
+  --color-ink: #1f1428;
+  --color-muted: #6e6177;
+  --color-subtle: #a497ab;
+  --color-line: #efe4ec;
+  --color-brand: #c026d3;
+  --color-brand-dark: #a21caf;
+  --color-brand-soft: #fae8ff;
+  --color-sun: #facc15;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-unbounded), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html,
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-tap-highlight-color: transparent;
+  }
+  section[id] {
+    scroll-margin-top: 5.5rem;
+  }
+  ::selection {
+    background-color: rgb(192 38 211 / 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@utility input {
+  width: 100%;
+  border: 1px solid var(--color-line);
+  border-radius: 0.9rem;
+  background-color: var(--color-surface);
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  &:focus {
+    outline: none;
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 4px rgb(192 38 211 / 0.14);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@utility animate-pop {
+  animation: pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Сетка в клетку, как в тетради */
+@utility bg-notebook {
+  background-image:
+    linear-gradient(to right, rgb(192 38 211 / 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(192 38 211 / 0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
