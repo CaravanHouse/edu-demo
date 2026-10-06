@@ -2,9 +2,11 @@
 
 import { ArrowRight, CalendarDays, Clock, MonitorPlay, RotateCcw, Users } from "lucide-react";
 import { useState } from "react";
-import { courseById, courses, days, directionColor, groups, levelByScore, levelTest, slots, teacherById, teachers, type Direction, type Format } from "@/content/data";
+import { days, directionColor, levelByScore, levelTest, slots, type Direction, type Format } from "@/content/data";
 import { getUI } from "@/content/ui";
 import { sum, tr, type Locale } from "@/lib/i18n";
+import { courseOf, teacherOf } from "@/lib/school";
+import { useSchool } from "./SchoolContext";
 import { TrialButton } from "./Trial";
 
 const initials = (name: string) =>
@@ -29,9 +31,12 @@ function Heading({ eyebrow, title, subtitle, id, light }: { eyebrow: string; tit
 export function Courses({ lang }: { lang: Locale }) {
   const ui = getUI(lang);
   const t = ui.courses;
+  const school = useSchool();
   const [direction, setDirection] = useState<Direction | "all">("all");
   const [format, setFormat] = useState<Format | "all">("all");
-  const list = courses.filter((c) => (direction === "all" || c.direction === direction) && (format === "all" || c.formats.includes(format)));
+  // вкладки — только те направления, которые есть у центра
+  const directions = (["english", "it", "school", "exams"] as const).filter((d) => school.courses.some((c) => c.direction === d));
+  const list = school.courses.filter((c) => (direction === "all" || c.direction === direction) && (format === "all" || c.placeholder || c.formats.includes(format)));
 
   return (
     <section id="courses" aria-labelledby="courses-title" className="py-16 sm:py-24">
@@ -39,7 +44,7 @@ export function Courses({ lang }: { lang: Locale }) {
         <Heading id="courses-title" eyebrow={t.eyebrow} title={t.title} />
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div role="tablist" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
-            {(["all", "english", "it", "school", "exams"] as const).map((d) => (
+            {(["all", ...directions] as const).map((d) => (
               <button
                 key={d}
                 role="tab"
@@ -51,7 +56,7 @@ export function Courses({ lang }: { lang: Locale }) {
               </button>
             ))}
           </div>
-          <div role="group" className="flex self-start rounded-full bg-surface p-1 text-sm font-semibold">
+          <div role="group" className={`flex self-start rounded-full bg-surface p-1 text-sm font-semibold ${school.personal ? "hidden" : ""}`}>
             {(["all", "offline", "online"] as const).map((f) => (
               <button key={f} type="button" aria-pressed={format === f} onClick={() => setFormat(f)} className={`rounded-full px-4 py-2 ${format === f ? "bg-brand text-white" : "text-muted"}`}>
                 {f === "all" ? t.anyFormat : t.formats[f]}
@@ -63,8 +68,23 @@ export function Courses({ lang }: { lang: Locale }) {
         {list.length ? (
           <ul className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {list.map((c) => {
-              const teacher = teacherById(c.teacher);
+              const teacher = teacherOf(school, c.teacher);
               const color = directionColor[c.direction];
+              // курс персонального демо: знаем только название — показываем, где будет описание
+              if (c.placeholder || !teacher) {
+                return (
+                  <li key={c.id} className="flex flex-col rounded-[1.75rem] border border-line bg-surface p-6">
+                    <span className={`self-start rounded-full px-3 py-1 text-xs font-bold ${color.bg} ${color.text}`}>{t.directions[c.direction]}</span>
+                    <h3 className="mt-4 font-display text-xl font-bold">{tr(c.title, lang)}</h3>
+                    <p className="mt-3 rounded-2xl border border-dashed border-line px-4 py-3 text-sm text-muted">{ui.personal.courseNote}</p>
+                    <div className="mt-auto pt-6">
+                      <TrialButton prefill={{ course: c.id }} className="h-11 w-full rounded-full bg-ink px-5 text-sm font-semibold text-white hover:bg-brand">
+                        {t.book}
+                      </TrialButton>
+                    </div>
+                  </li>
+                );
+              }
               return (
                 <li key={c.id} className="relative flex flex-col rounded-[1.75rem] border border-line bg-surface p-6 transition-shadow hover:shadow-xl">
                   {c.hit ? <span className="absolute -top-3 right-6 rounded-full bg-sun px-3 py-1 text-xs font-bold">{t.hit}</span> : null}
@@ -133,10 +153,14 @@ export function Courses({ lang }: { lang: Locale }) {
 export function LevelTest({ lang }: { lang: Locale }) {
   const ui = getUI(lang);
   const t = ui.test;
+  const school = useSchool();
   const [step, setStep] = useState(-1); // -1 — старт, длина — результат
   const [answers, setAnswers] = useState<number[]>([]);
   const score = answers.filter((a, i) => a === levelTest[i].answer).length;
-  const result = levelByScore.find((l) => score >= l.min)!;
+  const level = levelByScore.find((l) => score >= l.min)!;
+  // у персонального демо рекомендуем английский курс центра
+  const result = { level: level.level, course: school.personal ? (school.testCourse ?? level.course) : level.course };
+  if (!school.testCourse) return null;
 
   const choose = (option: number) => {
     setAnswers([...answers, option]);
@@ -184,7 +208,7 @@ export function LevelTest({ lang }: { lang: Locale }) {
               <p className="mt-3 text-muted">
                 {score} / {levelTest.length} {t.resultText}
               </p>
-              <p className="mt-1 font-display text-lg font-bold">{tr(courseById(result.course).title, lang)}</p>
+              <p className="mt-1 font-display text-lg font-bold">{tr(courseOf(school, result.course).title, lang)}</p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <TrialButton prefill={{ course: result.course }} className="h-12 rounded-full bg-brand px-6 font-semibold text-white hover:bg-brand-dark">
                   {t.book}
@@ -212,14 +236,16 @@ export function LevelTest({ lang }: { lang: Locale }) {
 export function Schedule({ lang }: { lang: Locale }) {
   const ui = getUI(lang);
   const t = ui.schedule;
+  const school = useSchool();
   const [direction, setDirection] = useState<Direction | "all">("all");
+  const directions = (["english", "it", "school", "exams"] as const).filter((d) => school.courses.some((c) => c.direction === d));
   return (
     <section id="schedule" aria-labelledby="schedule-title" className="py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          <Heading id="schedule-title" eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} />
+          <Heading id="schedule-title" eyebrow={t.eyebrow} title={t.title} subtitle={school.personal ? `${t.subtitle} ${ui.personal.scheduleNote}` : t.subtitle} />
           <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
-            {(["all", "english", "it", "school", "exams"] as const).map((d) => (
+            {(["all", ...directions] as const).map((d) => (
               <button
                 key={d}
                 type="button"
@@ -247,9 +273,9 @@ export function Schedule({ lang }: { lang: Locale }) {
               <div key={slot} className="contents">
                 <div className="flex items-center justify-center text-xs font-semibold text-muted">{slot}</div>
                 {days.map((_, d) => {
-                  const index = groups.findIndex((g) => g.day === d && g.slot === s);
-                  const g = groups[index];
-                  const course = g ? courseById(g.course) : null;
+                  const index = school.groups.findIndex((g) => g.day === d && g.slot === s);
+                  const g = school.groups[index];
+                  const course = g ? courseOf(school, g.course) : null;
                   const visible = course && (direction === "all" || course.direction === direction);
                   return (
                     <div key={d} className="min-h-[4.5rem]">
@@ -280,7 +306,10 @@ export function Schedule({ lang }: { lang: Locale }) {
 
 export function Teachers({ lang }: { lang: Locale }) {
   const t = getUI(lang).teachers;
+  const { teachers } = useSchool();
   const tones = ["bg-fuchsia-200", "bg-amber-200", "bg-emerald-200", "bg-rose-200"];
+  // в персональном демо преподавателей центра мы не знаем — блок не показываем
+  if (!teachers.length) return null;
   return (
     <section id="teachers" aria-labelledby="teachers-title" className="bg-surface py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

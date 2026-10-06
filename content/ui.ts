@@ -5,7 +5,22 @@ const ru = {
     title: "Zukko Academy — английский, IT и подготовка к экзаменам в Ташкенте (демо)",
     description: "Демо-сайт учебного центра от CaravanHouse: курсы с фильтрами, тест уровня английского, расписание групп, запись на пробный урок и личный кабинет ученика.",
   },
-  demo: { text: "Демо-сайт от CaravanHouse — учебный центр вымышленный, заявки никуда не отправляются.", cta: "Заказать такой сайт" },
+  demo: { text: "Демо-сайт от CaravanHouse IT — учебный центр вымышленный, заявки никуда не отправляются.", cta: "Заказать такой сайт" },
+  personal: {
+    bar: "Демо от CaravanHouse IT — так может выглядеть сайт «{name}». Курсы ваши, остальное — для примера.",
+    cta: "Хочу такое для своего центра",
+    cardTitle: "Курсы центра",
+    courseNote: "Здесь будет описание курса: программа, длительность, расписание и цена.",
+    scheduleNote: "Пример расписания — на настоящем сайте здесь будут ваши группы и кабинеты.",
+    stats: [
+      { value: "{courses}", label: "направлений" },
+      { value: "24/7", label: "запись онлайн" },
+      { value: "1 мин", label: "на заявку" },
+    ],
+    footer: "Демо-сайт для «{name}» от CaravanHouse IT. Курсы — ваши, остальные данные — для примера.",
+    homework: "Домашнее задание к уроку",
+    subtitle: "{courses} — в одном месте: расписание групп, запись на пробный урок и личный кабинет ученика.",
+  },
   nav: { courses: "Курсы", test: "Тест уровня", schedule: "Расписание", teachers: "Преподаватели", cabinet: "Личный кабинет" },
   langLabel: "Язык",
   trial: "Пробный урок",
@@ -95,7 +110,7 @@ const ru = {
     calendar: "Посещаемость за 4 недели",
     certificate: "Сертификат после курса",
   },
-  footer: { about: "Zukko Academy — вымышленный учебный центр для демонстрации сайта.", made: "Сайт сделан командой CaravanHouse" },
+  footer: { about: "Zukko Academy — вымышленный учебный центр для демонстрации сайта.", made: "Сайт сделан командой CaravanHouse IT" },
 };
 
 export type UI = typeof ru;
@@ -105,7 +120,22 @@ const uz: UI = {
     title: "Zukko Academy — Toshkentda ingliz tili, IT va imtihonlarga tayyorgarlik (demo)",
     description: "CaravanHouse tayyorlagan oʻquv markazi demo-sayti: filtrli kurslar, ingliz tili darajasi testi, guruhlar jadvali, sinov darsiga yozilish va oʻquvchi shaxsiy kabineti.",
   },
-  demo: { text: "CaravanHouse demo-sayti — oʻquv markazi oʻylab topilgan, arizalar hech qayerga yuborilmaydi.", cta: "Shunday sayt buyurtma qilish" },
+  demo: { text: "CaravanHouse IT demo-sayti — oʻquv markazi oʻylab topilgan, arizalar hech qayerga yuborilmaydi.", cta: "Shunday sayt buyurtma qilish" },
+  personal: {
+    bar: "CaravanHouse IT demosi — «{name}» sayti shunday koʻrinishi mumkin. Kurslar sizniki, qolgani — namuna uchun.",
+    cta: "Markazim uchun shunday sayt kerak",
+    cardTitle: "Markaz kurslari",
+    courseNote: "Bu yerda kurs tavsifi boʻladi: dastur, davomiylik, jadval va narx.",
+    scheduleNote: "Jadval namunasi — haqiqiy saytda bu yerda sizning guruhlaringiz va xonalaringiz boʻladi.",
+    stats: [
+      { value: "{courses}", label: "yoʻnalish" },
+      { value: "24/7", label: "onlayn yozilish" },
+      { value: "1 daq", label: "ariza uchun" },
+    ],
+    footer: "«{name}» uchun CaravanHouse IT tayyorlagan demo-sayt. Kurslar — sizniki, qolgan maʼlumotlar — namuna uchun.",
+    homework: "Darsga uy vazifasi",
+    subtitle: "{courses} — bir joyda: guruhlar jadvali, sinov darsiga yozilish va oʻquvchi shaxsiy kabineti.",
+  },
   nav: { courses: "Kurslar", test: "Daraja testi", schedule: "Jadval", teachers: "Oʻqituvchilar", cabinet: "Shaxsiy kabinet" },
   langLabel: "Til",
   trial: "Sinov darsi",
@@ -195,7 +225,7 @@ const uz: UI = {
     calendar: "4 haftalik davomat",
     certificate: "Kursdan keyin sertifikat",
   },
-  footer: { about: "Zukko Academy — saytni namoyish qilish uchun oʻylab topilgan oʻquv markazi.", made: "Sayt CaravanHouse jamoasi tomonidan yaratilgan" },
+  footer: { about: "Zukko Academy — saytni namoyish qilish uchun oʻylab topilgan oʻquv markazi.", made: "Sayt CaravanHouse IT jamoasi tomonidan yaratilgan" },
 };
 
 const dictionaries: Record<Locale, UI> = { ru, uz };
