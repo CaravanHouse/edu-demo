@@ -5,10 +5,9 @@ import { hasLocale } from "@/lib/i18n";
 import { getProspect } from "@/lib/prospect";
 import { personalSchool } from "@/lib/school";
 
-// Персональное демо для конкретного центра: /ru/p/<slug>. Страницы собираются при первом открытии и кешируются на 5 минут
-export const dynamicParams = true;
-export const revalidate = 300;
-export const generateStaticParams = async () => [];
+// Персональное демо для конкретного центра: /ru/p/<slug>. Рендерится на каждый запрос:
+// конфиг читается из приватного хранилища, а запрос с авторизацией не кешируется статически
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/p/[slug]">): Promise<Metadata> {
   const { slug } = await params;

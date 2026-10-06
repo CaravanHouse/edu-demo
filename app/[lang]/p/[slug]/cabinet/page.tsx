@@ -5,9 +5,7 @@ import { hasLocale } from "@/lib/i18n";
 import { getProspect } from "@/lib/prospect";
 import { personalSchool } from "@/lib/school";
 
-export const dynamicParams = true;
-export const revalidate = 300;
-export const generateStaticParams = async () => [];
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = { robots: { index: false, follow: false, nocache: true } };
 
