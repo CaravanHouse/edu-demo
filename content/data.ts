@@ -48,6 +48,8 @@ export interface Course {
   startInDays: number;
   outcome: L;
   hit?: boolean;
+  /** курс из персонального демо: знаем только название, остальное не показываем */
+  placeholder?: boolean;
 }
 
 export const courses: Course[] = [

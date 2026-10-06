@@ -2,9 +2,11 @@
 
 import { Check, X } from "lucide-react";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { courseById, courses, days, groups, slots } from "@/content/data";
+import { days, slots } from "@/content/data";
 import { getUI } from "@/content/ui";
 import { tr, type Locale } from "@/lib/i18n";
+import type { Group } from "@/lib/school";
+import { useSchool } from "./SchoolContext";
 
 type Prefill = { course?: string; group?: number };
 const TrialContext = createContext<(p?: Prefill) => void>(() => {});
@@ -30,15 +32,13 @@ export function TrialButton({ prefill, className, children }: { prefill?: Prefil
   );
 }
 
-const groupLabel = (i: number, lang: Locale) => {
-  const g = groups[i];
-  return `${tr(days[g.day], lang)} ${slots[g.slot]} · ${g.room}`;
-};
+const groupLabel = (g: Group | undefined, lang: Locale) => (g ? `${tr(days[g.day], lang)} ${slots[g.slot]} · ${g.room}` : "");
 
 function TrialModal({ lang, prefill, onClose }: { lang: Locale; prefill: Prefill; onClose: () => void }) {
   const ui = getUI(lang);
   const t = ui.modal;
-  const [course, setCourse] = useState(prefill.course ?? (prefill.group !== undefined ? groups[prefill.group].course : "gen"));
+  const { courses, groups } = useSchool();
+  const [course, setCourse] = useState(prefill.course ?? (prefill.group !== undefined ? groups[prefill.group].course : courses[0].id));
   const courseGroups = groups.map((g, i) => ({ ...g, i })).filter((g) => g.course === course);
   const [group, setGroup] = useState<number>(prefill.group ?? courseGroups[0]?.i ?? 0);
   const [name, setName] = useState("");
@@ -86,7 +86,7 @@ function TrialModal({ lang, prefill, onClose }: { lang: Locale; prefill: Prefill
               <Check className="h-8 w-8" strokeWidth={3} />
             </span>
             <p className="mt-4 font-semibold">
-              {tr(courseById(course).title, lang)} · {groupLabel(group, lang)}
+              {tr((courses.find((c) => c.id === course) ?? courses[0]).title, lang)} · {groupLabel(groups[group], lang)}
             </p>
             <p className="mt-3 text-sm text-muted">{t.successText}</p>
             <button type="button" onClick={onClose} className="mt-6 h-12 w-full rounded-full bg-ink font-semibold text-white">
@@ -123,7 +123,7 @@ function TrialModal({ lang, prefill, onClose }: { lang: Locale; prefill: Prefill
                     onClick={() => setGroup(g.i)}
                     className={`rounded-full border px-3.5 py-2 text-sm font-semibold ${group === g.i ? "border-brand bg-brand text-white" : "border-line hover:border-brand/50"}`}
                   >
-                    {groupLabel(g.i, lang)}
+                    {groupLabel(g, lang)}
                   </button>
                 ))}
               </div>
