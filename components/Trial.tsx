@@ -10,7 +10,7 @@ import { useSchool } from "./SchoolContext";
 
 type Prefill = { course?: string; group?: number };
 const TrialContext = createContext<(p?: Prefill) => void>(() => {});
-export const useTrial = () => useContext(TrialContext);
+const useTrial = () => useContext(TrialContext);
 
 /** Окно «Пробный урок» доступно из курсов, теста и расписания */
 export default function TrialProvider({ lang, children }: { lang: Locale; children: ReactNode }) {

@@ -120,9 +120,6 @@ export const levelByScore: { min: number; level: Level; course: string }[] = [
   { min: 0, level: "A1", course: "gen" },
 ];
 
-export const courseById = (id: string) => courses.find((c) => c.id === id)!;
-export const teacherById = (id: string) => teachers.find((t) => t.id === id)!;
-
 // Личный кабинет демо-ученика
 export const student = {
   name: { ru: "Азиз", uz: "Aziz" },
